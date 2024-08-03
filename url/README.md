@@ -2,6 +2,11 @@
 
 - Simple program for basic url encoding and decoding
 
+## Installation
+
+```cargo install url-cli-tool```
+- Running the above command will globally install the *url-cli-tool* binary.
+
 ## Usage
 
 ```url [OPTIONS] [FILE]```
