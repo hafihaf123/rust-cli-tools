@@ -1,8 +1,8 @@
-## Url
+# Url
 
 - Simple program for basic url encoding and decoding
 
-### Usage
+## Usage
 
 ```url [OPTIONS] [FILE]```
 
@@ -10,11 +10,12 @@
 
 ```somecommand | url (-d)```
 
-#### Arguments
+### Arguments
 
   [FILE]  File to url-encode
 
-#### Options
+### Options
+
 ```
   -d, --decode           Decode mode
   -s, --string <STRING>  Url-encode a string instead of a file (cannot be used together with the [FILE] argument)
