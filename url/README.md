@@ -12,7 +12,9 @@
 
 ### Arguments
 
+```
   [FILE]  File to url-encode
+```
 
 ### Options
 
