@@ -27,6 +27,7 @@ fn handle_file(path: std::path::PathBuf) -> Result<String> {
 
 fn handle_stdin() -> Result<String> {
     if stdin().is_terminal() {
+        eprintln!("!! Either the [FILE] or the '-s <STRING>' argument must be specified when not piping input !!\n");
         Cli::command().print_help()?;
         ::std::process::exit(2);
     }
@@ -50,6 +51,7 @@ fn main() -> Result<()> {
             match cli.file {
                 None => s,
                 Some(_) => {
+                    eprintln!("!! cannot use the '-s' option together with the [FILE] argument !!\n");
                     Cli::command().print_help()?;
                     ::std::process::exit(2);
                 }
