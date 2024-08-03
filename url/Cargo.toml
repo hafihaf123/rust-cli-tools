@@ -3,6 +3,15 @@ name = "url"
 version = "1.0.0"
 edition = "2021"
 
+authors = ["Michal Buchman <misobuchta@gmail.com>"]
+license = "MIT OR Apache-2.0"
+description = "Simple program for basic url encoding and decoding"
+readme = "README.md"
+homepage = "https://github.com/hafihaf123/rust-cli-tools/tree/main/url"
+repository = "https://github.com/hafihaf123/rust-cli-tools/tree/main/url"
+keywords = ["cli", "url", "demo", "cryptography", "cybersecurity"]
+categories = ["command-line-utilities"]
+
 [dependencies]
 anyhow = "1.0.86"
 clap = { version = "4.5.13", features = ["derive"] }

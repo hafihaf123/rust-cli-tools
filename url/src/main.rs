@@ -11,7 +11,7 @@ struct Cli{
     /// Decode mode
     #[arg(short, long)]
     decode: bool,
-    /// Url-encode a string instead of a file
+    /// Url-encode a string instead of a file (cannot be used together with the [FILE] argument)
     #[arg(short, long)]
     string: Option<String>,
     /// File to url-encode
