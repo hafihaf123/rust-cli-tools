@@ -15,11 +15,12 @@
   [FILE]  File to url-encode
 
 #### Options
-
+```
   -d, --decode           Decode mode
   -s, --string <STRING>  Url-encode a string instead of a file (cannot be used together with the [FILE] argument)
   -h, --help             Print help
   -V, --version          Print version
+```
 
 ---
 
