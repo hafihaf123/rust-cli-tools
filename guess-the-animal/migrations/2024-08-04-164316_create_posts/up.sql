@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE questions (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  question TEXT NOT NULL,
+  content TEXT NOT NULL,
   yes_id INTEGER,
   no_id INTEGER,
   FOREIGN KEY(yes_id) REFERENCES questions(id),

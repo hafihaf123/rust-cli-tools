@@ -1,12 +1,12 @@
 use diesel::prelude::*;
-use crate::schema::{questions, animals};
+use super::schema::*;
 
 #[derive(Queryable, Selectable)]
 #[diesel(table_name = questions)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Question {
     pub id: i32,
-    pub question: String,
+    pub content: String,
     pub yes_id: Option<i32>,
     pub no_id: Option<i32>,
 }

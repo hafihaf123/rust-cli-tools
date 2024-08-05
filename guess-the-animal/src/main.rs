@@ -1,21 +1,26 @@
 use anyhow::Result;
-
-use guess_the_animal::database_utils::{create_question, get_animals, get_questions};
 use guess_the_animal::establish_connection;
+use guess_the_animal::database_utils as database;
 
 fn main() -> Result<()> {
     println!("think of an animal\n");
 
-    get_questions()?;
+    database::get_questions()?;
     println!();
-    get_animals()?;
+    database::get_animals()?;
     println!();
 
     let mut conn = establish_connection()?;
-    create_question(&mut conn, "can it roar?")?;
 
-    println!("added a new question!!");
-    get_questions()?;
+    println!("adding a new question...");
+    database::create_question(&mut conn, "can it roar?")?;
+    database::get_questions()?;
+
+    println!();
+
+    println!("added a new animal!!");
+    database::create_animal(&mut conn, "horse")?;
+    database::get_animals()?;
 
     Ok(())
 }

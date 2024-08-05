@@ -7,11 +7,4 @@ edition = "2021"
 anyhow = "1.0.86"
 diesel = { version = "2.2.2", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 dotenvy = "0.15.7"
-#
-#[lib]
-#name = "library"
-#path = "src/lib.rs"
-#
-#[[bin]]
-#name = "main"
-#path = "src/main.rs"
+libsqlite3-sys = { version = "0.29.0", features = ["bundled"] }
