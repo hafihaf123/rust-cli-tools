@@ -1,39 +1,21 @@
-use std::io::BufRead;
-use anyhow::{Context, Result};
+use anyhow::Result;
 
-mod endings;
-mod utils;
-mod lib;
-
-use lib::establish_connection;
-
-fn ask(line: Line) -> Result<String> {
-    let answer = utils::ask_yes_or_no(line.question)?;
-    match answer {
-        true => {
-            match file_utils::get_line_from_file(line.n + 1)? {
-                None => endings::animal_guess(line.animal)?;
-                Some(next_line) => ask(next_line)
-            }
-        },
-        false => Ok(line.animal)
-    }
-}
-
-fn game_start() -> Result<()> {
-    match file_utils::get_line_from_file(0)? {
-        None => {},
-        Some(question) => {
-            ask(question)?;
-        },
-    }
-    Ok(())
-}
+use guess_the_animal::database_utils::{create_question, get_animals, get_questions};
+use guess_the_animal::establish_connection;
 
 fn main() -> Result<()> {
     println!("think of an animal\n");
-    
-    game_start()?;
+
+    get_questions()?;
+    println!();
+    get_animals()?;
+    println!();
+
+    let mut conn = establish_connection()?;
+    create_question(&mut conn, "can it roar?")?;
+
+    println!("added a new question!!");
+    get_questions()?;
 
     Ok(())
 }

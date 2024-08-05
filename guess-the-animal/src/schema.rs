@@ -2,7 +2,7 @@
 
 diesel::table! {
     animals (id) {
-        id -> Nullable<Integer>,
+        id -> Integer,
         name -> Text,
     }
 }
