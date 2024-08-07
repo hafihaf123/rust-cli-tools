@@ -4,6 +4,7 @@ CREATE TABLE questions (
   content TEXT NOT NULL,
   yes_id INTEGER,
   no_id INTEGER,
+  is_last INTEGER NOT NULL,
   FOREIGN KEY(yes_id) REFERENCES questions(id),
   FOREIGN KEY(no_id) REFERENCES questions(id)
 );

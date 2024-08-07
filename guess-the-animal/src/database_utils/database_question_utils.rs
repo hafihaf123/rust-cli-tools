@@ -9,7 +9,6 @@ pub fn get_all_questions() -> Result<Vec<Question>> {
     let connection = &mut crate::establish_connection()?;
 
     questions
-        .limit(5)
         .select(Question::as_select())
         .load(connection)
         .with_context(|| "Could not load questions")
@@ -25,20 +24,17 @@ pub fn get_question_by_id(id_: i32) -> Result<Option<Question>> {
         .with_context(|| format!("Could not load question with id `{}`", id_))
 }
 
-pub fn create_question(connection: &mut SqliteConnection, question: Question) -> Result<Question> {
+pub fn create_question(connection: &mut SqliteConnection, question: &Question) -> Result<i32> {
     use crate::schema::questions;
 
-    let new_question = NewQuestion {
-        content: &*question.content,
-        yes_id: question.yes_id,
-        no_id: question.no_id
-    };
+    let new_question = NewQuestion::from_question(&question);
 
-    diesel::insert_into(questions::table)
+    Ok(diesel::insert_into(questions::table)
         .values(&new_question)
         .returning(Question::as_returning())
         .get_result(connection)
-        .with_context(|| "Could not save the question")
+        .with_context(|| "Could not save the question")?
+        .id)
 }
 
 pub fn delete_question_by_id(connection: &mut SqliteConnection, n: i32) -> Result<usize> {
@@ -54,12 +50,7 @@ pub fn delete_question_by_content(connection: &mut SqliteConnection, content_: &
 }
 
 pub fn update_question_by_id(connection: &mut SqliteConnection, id_: i32, content_: Option<String>, yes_id_: Option<i32>, no_id_: Option<i32>) -> Result<Question> {
-    let mut question: Question = Question {
-        id: id_,
-        content: "".to_string(),
-        yes_id: None,
-        no_id: None,
-    };
+    let mut question: Question = Question::default();
     match content_ {
         None => {}
         Some(string) => {
@@ -102,59 +93,51 @@ mod tests {
 
     fn init_questions_with_relations() -> Vec<Question> {
         let mut res = Vec::new();
-        res.push(Question {
-            id: 1,
-            content: "x y?".to_string(),
-            yes_id: None,
-            no_id: None,
-        });
-        res.push(Question {
-            id: 2,
-            content: "a b!".to_string(),
-            yes_id: Some(1),
-            no_id: None,
-        });
-        res.push(Question {
-            id: 3,
-            content: "o P()".to_string(),
-            yes_id: None,
-            no_id: Some(1),
-        });
-        res.push(Question {
-            id: 4,
-            content: "a b!".to_string(),
-            yes_id: Some(2),
-            no_id: Some(3),
-        });
+        res.push(Question::new(
+            "x y?",
+            None,
+            None
+        ));
+        res.push(Question::new(
+            "a b!",
+            Some(1),
+            None
+        ));
+        res.push(Question::new(
+            "o P()",
+            None,
+            Some(1)
+        ));
+        res.push(Question::new(
+            "a b!",
+            Some(2),
+            Some(3)
+        ));
         res
     }
 
     fn init_questions_without_relations() -> Vec<Question> {
         let mut res = Vec::new();
-        res.push(Question {
-            id: 1,
-            content: "x y?".to_string(),
-            yes_id: None,
-            no_id: None,
-        });
-        res.push(Question {
-            id: 2,
-            content: "a b!".to_string(),
-            yes_id: None,
-            no_id: None,
-        });
-        res.push(Question {
-            id: 3,
-            content: "o P()".to_string(),
-            yes_id: None,
-            no_id: None,
-        });
-        res.push(Question {
-            id: 4,
-            content: "a b!".to_string(),
-            yes_id: None,
-            no_id: None,
-        });
+        res.push(Question::new(
+            "x y?",
+            None,
+            None
+        ));
+        res.push(Question::new(
+            "a b!",
+            None,
+            None
+        ));
+        res.push(Question::new(
+            "o P()",
+            None,
+            None
+        ));
+        res.push(Question::new(
+            "a b!",
+            None,
+            None
+        ));
         res
     }
 
@@ -162,7 +145,7 @@ mod tests {
         let mut conn = establish_connection().unwrap();
 
         for question in init_questions_with_relations() {
-            create_question(&mut conn, question).unwrap();
+            create_question(&mut conn, &question).unwrap();
         }
     }
 
@@ -170,7 +153,7 @@ mod tests {
         let mut conn = establish_connection().unwrap();
 
         for question in init_questions_without_relations() {
-            create_question(&mut conn, question).unwrap();
+            create_question(&mut conn, &question).unwrap();
         }
     }
 
@@ -249,20 +232,18 @@ mod tests {
         setup_tests();
         test_get_all_questions();
 
-        let expected_question = Question {
-            id: 4,
-            content: "a b!".to_string(),
-            yes_id: Some(2),
-            no_id: Some(3),
-        };
+        let expected_question = Question::new(
+            "a b!",
+            Some(2),
+            Some(3)
+        );
         assert_eq!(get_question_by_id(4).unwrap().unwrap(), expected_question);
 
-        let expected_updated_question = Question {
-            id: 4,
-            content: "a b!".to_string(),
-            yes_id: Some(2),
-            no_id: Some(1),
-        };
+        let expected_updated_question = Question::new(
+            "a b!",
+            Some(2),
+            Some(1)
+        );
         assert_eq!(update_question_by_id(&mut conn, 4, None, None, Some(1)).unwrap(), expected_updated_question);
 
         cleanup_tests_by_id();
