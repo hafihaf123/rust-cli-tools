@@ -18,14 +18,14 @@
 ### Arguments
 
 ```
-  [FILE]...  File to url-encode. The output will be saved to _<filename>\_encoded.txt_ or _<filename>\_decoded.txt_
+  [FILE]...  File to url-encode. The output will be saved to <filename>_encoded.txt or <filename>_decoded.txt
 ```
 
 ### Options
 
 ```
   -d, --decode           Decode mode
-  -s, --string <STRING>  Url-encode a string instead of a file (cannot be used together with the [FILE] argument). Output will be written to stdout
+  -s, --string <STRING>  Url-encode a string instead of a file (cannot be used together with the [FILE] argument). Output will be written to stdout.
   -h, --help             Print help
   -V, --version          Print version
 ```
