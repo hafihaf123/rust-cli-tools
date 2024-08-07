@@ -31,10 +31,10 @@ fn handle_stdin() -> Result<String> {
     if stdin().is_terminal() {
         eprintln!("!! Either the [FILE] or the '-s <STRING>' argument must be specified when not piping input !!\n");
         Cli::command().print_help()?;
-        ::std::process::exit(2);
+        std::process::exit(2);
     }
     let mut s = String::new();
-    std::io::stdin().read_line(&mut s)?;
+    stdin().read_line(&mut s)?;
     s.pop();
     Ok(s)
 }
@@ -86,7 +86,7 @@ fn main() -> Result<()> {
             else {
                 eprintln!("!! cannot use the '-s' option together with the [FILE] argument !!\n");
                 Cli::command().print_help()?;
-                ::std::process::exit(2);
+                std::process::exit(2);
             }
         },
     }

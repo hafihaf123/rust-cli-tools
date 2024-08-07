@@ -1,6 +1,7 @@
 pub mod diesel_files;
 pub mod utils;
 pub mod database_utils;
+pub mod schema;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;

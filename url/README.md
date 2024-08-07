@@ -11,7 +11,7 @@
 
 ```url [OPTIONS] [FILE]...```
 
-- you can also pipe the output of an another command into url to encrypt (decrypt) its output
+- you can also pipe the output of another command into url to encrypt (decrypt) its output
 
 ```somecommand | url (-d)```
 
