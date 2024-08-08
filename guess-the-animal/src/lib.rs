@@ -1,12 +1,13 @@
-pub mod diesel_files;
-pub mod utils;
+pub mod models;
 pub mod database_utils;
+pub mod utils;
 pub mod schema;
+pub mod endings;
 
 use diesel::prelude::*;
 use dotenvy::dotenv;
 use std::env;
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
 
 pub fn establish_connection() -> Result<SqliteConnection> {
     dotenv().ok();

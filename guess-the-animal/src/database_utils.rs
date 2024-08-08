@@ -2,7 +2,7 @@ use anyhow::{Context, Result};
 use diesel::{ExpressionMethods, OptionalExtension, QueryDsl, RunQueryDsl, SelectableHelper};
 use diesel::SqliteConnection;
 
-use crate::diesel_files::models::{NewQuestion, Question};
+use crate::models::{NewQuestion, Question};
 use crate::schema::questions::dsl::*;
 
 pub fn get_all_questions() -> Result<Vec<Question>> {
@@ -24,17 +24,16 @@ pub fn get_question_by_id(id_: i32) -> Result<Option<Question>> {
         .with_context(|| format!("Could not load question with id `{}`", id_))
 }
 
-pub fn create_question(connection: &mut SqliteConnection, question: &Question) -> Result<i32> {
+pub fn create_question(connection: &mut SqliteConnection, question: Question) -> Result<Question> {
     use crate::schema::questions;
 
     let new_question = NewQuestion::from_question(&question);
 
-    Ok(diesel::insert_into(questions::table)
+    diesel::insert_into(questions::table)
         .values(&new_question)
         .returning(Question::as_returning())
         .get_result(connection)
-        .with_context(|| "Could not save the question")?
-        .id)
+        .with_context(|| "Could not save the question")
 }
 
 pub fn delete_question_by_id(connection: &mut SqliteConnection, n: i32) -> Result<usize> {
@@ -145,7 +144,7 @@ mod tests {
         let mut conn = establish_connection().unwrap();
 
         for question in init_questions_with_relations() {
-            create_question(&mut conn, &question).unwrap();
+            create_question(&mut conn, question).unwrap();
         }
     }
 
@@ -153,7 +152,7 @@ mod tests {
         let mut conn = establish_connection().unwrap();
 
         for question in init_questions_without_relations() {
-            create_question(&mut conn, &question).unwrap();
+            create_question(&mut conn, question).unwrap();
         }
     }
 

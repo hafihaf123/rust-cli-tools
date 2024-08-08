@@ -23,13 +23,13 @@ impl Question {
             no_id,
         }
     }
-    pub fn new_last(content: &str, yes_id: Option<i32>, no_id: Option<i32>) -> Question {
+    pub fn new_last(animal_name: &str) -> Question {
         Question {
             id: 0,
-            content: content.to_string(),
+            content: format!("Did you think of `{}`?", animal_name),
             is_last: 1,
-            yes_id,
-            no_id,
+            yes_id: None,
+            no_id: None,
         }
     }
     pub fn default() -> Question {
@@ -61,18 +61,4 @@ impl NewQuestion<'_> {
             no_id: question.no_id
         }
     }
-}
-
-#[derive(Queryable, Selectable, Debug, PartialEq)]
-#[diesel(table_name = animals)]
-#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct Animal {
-    pub id: i32,
-    pub name: String,
-}
-
-#[derive(Insertable)]
-#[diesel(table_name = animals)]
-pub struct NewAnimal<'a> {
-    pub name: &'a str,
 }

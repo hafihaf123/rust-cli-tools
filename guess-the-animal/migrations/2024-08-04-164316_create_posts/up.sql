@@ -8,8 +8,3 @@ CREATE TABLE questions (
   FOREIGN KEY(yes_id) REFERENCES questions(id),
   FOREIGN KEY(no_id) REFERENCES questions(id)
 );
-
-CREATE TABLE animals (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  name TEXT NOT NULL
-);
