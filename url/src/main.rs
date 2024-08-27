@@ -10,7 +10,7 @@ use std::path::PathBuf;
 #[command(name = "url")]
 #[command(version, about, long_about = None)]
 struct Cli {
-    /// File to url-encode. The output will be saved to <filename>_encoded.txt or <filename>_decoded.txt
+    /// File to url-encode. The output will be saved to <filename>.encoded or <filename>.decoded
     file: Vec<PathBuf>,
     /// Decode mode
     #[arg(short, long)]
@@ -23,7 +23,7 @@ struct Cli {
 fn handle_file(path: &PathBuf) -> Result<String> {
     let mut s = std::fs::read_to_string(&path)
         .with_context(|| format!("could not open file: `{}`", path.display()))?;
-    s.pop();
+    s = s.trim().to_string();
     Ok(s)
 }
 
@@ -35,7 +35,7 @@ fn handle_stdin() -> Result<String> {
     }
     let mut s = String::new();
     stdin().read_line(&mut s)?;
-    s.pop();
+    s = s.trim().to_string();
     Ok(s)
 }
 
@@ -48,13 +48,13 @@ fn save_res_to_files(res: Vec<String>, files: Vec<PathBuf>, is_decode: bool) -> 
         let mut new_file = if is_decode {
             File::create_new(
                 PathBuf::from(
-                    format!("{}_decoded.txt", file_path.display())
+                    format!("{}.decoded", file_path.display())
                 )
             )?
         } else {
             File::create_new(
                 PathBuf::from(
-                    format!("{}_encoded.txt", file_path.display())
+                    format!("{}.encoded", file_path.display())
                 )
             )?
         };
@@ -103,7 +103,7 @@ fn main() -> Result<()> {
         }
     }
 
-    if cli.string.is_none() {
+    if cli.string.is_none()&&!cli.file.is_empty() {
         save_res_to_files(res, cli.file, cli.decode)?;
     } else {
         println!("{}", res[0]);
