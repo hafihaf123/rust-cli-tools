@@ -1,7 +1,7 @@
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Context, Result};
 use clap::{CommandFactory, Parser};
 use urlencoding::{encode, decode};
-use std::io::{stdin, IsTerminal, Write};
+use std::io::{self, BufRead, IsTerminal, Write};
 use std::fs::File;
 use std::path::PathBuf;
 
@@ -10,12 +10,15 @@ use std::path::PathBuf;
 #[command(name = "url")]
 #[command(version, about, long_about = None)]
 struct Cli {
-    /// File to url-encode. The output will be saved to <filename>.encoded or <filename>.decoded
+    /// File to url-encode
     file: Vec<PathBuf>,
     /// Decode mode
     #[arg(short, long)]
     decode: bool,
-    /// Url-encode a string instead of a file (cannot be used together with the [FILE] argument). Output will be written to stdout.
+    /// Save the output to a file
+    #[arg(short, long)]
+    output: Option<String>,
+    /// Url-encode a string instead of a file (cannot be used together with the [FILE] argument)
     #[arg(short, long)]
     string: Option<String>,
 }
@@ -28,38 +31,26 @@ fn handle_file(path: &PathBuf) -> Result<String> {
 }
 
 fn handle_stdin() -> Result<String> {
-    if stdin().is_terminal() {
+    let stdin = io::stdin();
+    if stdin.is_terminal() {
         eprintln!("!! Either the [FILE] or the '-s <STRING>' argument must be specified when not piping input !!\n");
         Cli::command().print_help()?;
         std::process::exit(2);
     }
-    let mut s = String::new();
-    stdin().read_line(&mut s)?;
-    s = s.trim().to_string();
-    Ok(s)
+    let mut res = String::new();
+
+    while stdin.lock().read_line(&mut res)? > 0 {}
+
+    res = res.trim().to_string();
+    Ok(res)
 }
 
-fn save_res_to_files(res: Vec<String>, files: Vec<PathBuf>, is_decode: bool) -> Result<()> {
-    if res.len() != files.len() {
-        return Err(anyhow!("The results vector and the files vector don't have the same length"));
-    }
-
-    for (file_path, content) in files.iter().zip(res.iter()) {
-        let mut new_file = if is_decode {
-            File::create_new(
-                PathBuf::from(
-                    format!("{}.decoded", file_path.display())
-                )
-            )?
-        } else {
-            File::create_new(
-                PathBuf::from(
-                    format!("{}.encoded", file_path.display())
-                )
-            )?
-        };
-
-        new_file.write_all(content.as_bytes())?;
+fn save_res_to_files(res: Vec<String>, output: &str) -> Result<()> {
+    let mut new_file = File::create_new(
+        PathBuf::from(&output)
+    )?;
+    for content in res.iter() {
+        new_file.write_all(format!("{}\n", content).as_bytes())?;
     }
 
     Ok(())
@@ -103,10 +94,15 @@ fn main() -> Result<()> {
         }
     }
 
-    if cli.string.is_none()&&!cli.file.is_empty() {
-        save_res_to_files(res, cli.file, cli.decode)?;
-    } else {
-        println!("{}", res[0]);
+    match cli.output {
+        Some(output) => {
+            save_res_to_files(res, &output)?;
+        },
+        None => {
+            for s in res {
+                println!("{}", s);
+            }
+        },
     }
 
     Ok(())
