@@ -25,7 +25,7 @@
 
 ```
     -d, --decode           Decode mode
-    -o, --output <OUTPUT>  Save the output to a  file
+    -o, --output <OUTPUT>  Save the output to a file
     -s, --string <STRING>  Url-encode a string instead of a file (cannot be used together with the [FILE] argument)
     -h, --help             Print help
     -V, --version          Print version
@@ -33,4 +33,4 @@
 
 ---
 
-url 1.1.0
+url 1.1.2
